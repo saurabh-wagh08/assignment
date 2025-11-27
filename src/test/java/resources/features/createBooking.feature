@@ -1,5 +1,5 @@
 #This feature will test the createBooking Api
-
+@Booking @Create_Booking
 Feature: User want to create new booking
   Scenario Outline: User is able to create the booking
     Given user has access to endpoint "/booking"
@@ -15,7 +15,7 @@ Feature: User want to create new booking
 
   Scenario Outline: User cannot create booking if mandatory field "<field>" in payload is missing
     Given user has access to endpoint "/booking"
-    And user try to create booking but "<field>" is missed in payload "<firstname>","<lastname>","<totalPrice>","<depositPaid>","<checkin>","<checkout>","<additionalNeeds>"
+    When user try to create booking but "<field>" is missed in payload "<firstname>","<lastname>","<totalPrice>","<depositPaid>","<checkin>","<checkout>","<additionalNeeds>"
     Then user should get the response code 500
     Examples:
       |field      | firstname  | lastname | totalPrice | depositPaid | checkin    | checkout   | additionalNeeds |
@@ -26,11 +26,11 @@ Feature: User want to create new booking
 
   Scenario Outline: User cannot create booking if booking dates "<field>" in payload is missing
     Given user has access to endpoint "/booking"
-    And user try to create booking but "<field>" is missed for booking dates in payload "<firstname>","<lastname>","<totalPrice>","<depositPaid>","<checkin>","<checkout>","<additionalNeeds>"
+    When user try to create booking but "<field>" is missed for booking dates in payload "<firstname>","<lastname>","<totalPrice>","<depositPaid>","<checkin>","<checkout>","<additionalNeeds>"
     Then user should get the response code 500
     Examples:
       |field| firstname | lastname | totalPrice | depositPaid | checkin    | checkout   | additionalNeeds |
-      |checkin| Ricky      | Martin      |   1000 | true        | 2026-01-05 | 2026-01-10  | Breakfast       |
+      |checkin | Ricky      | Martin      |   1000 | true        | 2026-01-05 | 2026-01-10  | Breakfast       |
       |checkout| Ricky      | Martin      |   1000 | true        | 2026-01-05 | 2026-01-10  | Breakfast       |
 
 

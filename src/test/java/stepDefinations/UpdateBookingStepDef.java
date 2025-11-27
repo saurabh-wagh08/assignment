@@ -48,6 +48,29 @@ public class UpdateBookingStepDef {
 
     }
 
+    @When("user update a booking without authentication {string},{string},{string},{string},{string},{string},{string}")
+    public void userUpdateABookingWithoutAuthentication(String firstname, String lastname, String totalPrice, String depositPaid, String checkin, String checkout, String additionalNeeds) {
+
+        JSONObject bookingBody = new JSONObject();
+        bookingBody.put("firstname", firstname);
+        bookingBody.put("lastname",lastname);
+        bookingBody.put("totalprice", Integer.valueOf(totalPrice));
+        bookingBody.put("depositpaid", Boolean.valueOf(depositPaid));
+        JSONObject bookingDates = new JSONObject();
+        bookingDates.put("checkin", checkin);
+        bookingDates.put("checkout", checkout);
+        bookingBody.put("bookingdates", bookingDates);
+        bookingBody.put("additionalneeds", additionalNeeds);
+
+        context.response = context.request()
+                .pathParam("bookingID", context.currentSession.get("bookingID"))
+                .body(bookingBody.toString())
+                .when().put(context.currentSession.get("endpoint")+"/{bookingID}");
+        context.response.then().log().all();
+
+
+
+    }
 
 
     @When("user creates a auth token with credential")
@@ -82,4 +105,5 @@ public class UpdateBookingStepDef {
         context.response.then().log().all();
 
     }
+
 }

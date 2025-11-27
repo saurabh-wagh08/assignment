@@ -18,7 +18,7 @@ public class Utility {
         Options options = Options.builder().logStacktrace().build();
         RestAssuredConfig config = CurlRestAssuredConfigFactory.createConfig(options);
         RestAssured.baseURI = PropertyFile.getProperty("BaseUrl");
-        System.out.println("Saurabh"+ PropertyFile.getProperty("BaseUrl"));
+        System.out.println(PropertyFile.getProperty("BaseUrl"));
         return RestAssured.given()
                 .config(config).relaxedHTTPSValidation()
                 .filter(new RestAssuredRequestFilter())

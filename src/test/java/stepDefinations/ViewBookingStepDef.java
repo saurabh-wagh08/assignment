@@ -59,11 +59,7 @@ public class ViewBookingStepDef {
 
     @And("user should see all the booking IDs")
     public void userShouldSeeAllTheBookingIDs() {
-        ArrayList<Integer> id = new ArrayList<>();
-        String x;
-        x= context.response.getBody().jsonPath().getString("bookingid");
-        LOG.info("Booking ID1: "+x);
-
+        Assert.assertNotNull(context.response.path("bookingid"));
     }
 
     @And("user response time is less than {int} milliseconds")
@@ -157,4 +153,6 @@ public class ViewBookingStepDef {
                 .when().get(context.currentSession.get("endpoint").toString());
 
     }
+
+
 }

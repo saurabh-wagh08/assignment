@@ -1,6 +1,5 @@
 #This feature will test the GetBookingIds Api
-
-
+@Booking @View_Booking
 Feature: User want to view all the booking ids
   Scenario: To view all the booking IDs
     Given user has access to endpoint "/booking"
@@ -20,8 +19,8 @@ Feature: User want to view all the booking ids
       | 2020-01-01 | 2024-12-31 |
 
 
-    # data is deleted from record
-  @Smoke
+
+
   Scenario: To view all the booking IDs filter by name
     Given user has access to endpoint "/booking"
     And user creates a booking
