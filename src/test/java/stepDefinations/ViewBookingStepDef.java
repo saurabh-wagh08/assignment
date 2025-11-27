@@ -17,6 +17,8 @@ import utils.RestAssuredRequestFilter;
 import utils.Utility;
 //import utils.Utility;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +42,7 @@ public class ViewBookingStepDef {
     @When("user makes a request to view booking IDs")
     public void userMakesARequestToViewBookingIDs() {
         context.response = context.request().when().get(context.currentSession.get("endpoint").toString());
+        context.response.then().log().all();
         int bookingID = context.response.getBody().jsonPath().getInt("[0].bookingid");
         System.out.println("Time Taken"+context.response.getTimeIn(TimeUnit.MILLISECONDS));
         LOG.info("Booking ID: "+bookingID);
@@ -55,9 +58,10 @@ public class ViewBookingStepDef {
 
     @And("user should see all the booking IDs")
     public void userShouldSeeAllTheBookingIDs() {
-   //     for(int i=0; i<context.response.getBody().jsonPath().getInt("[0].bookingid"))
-//        BookingID[] bookingIDs = ResponseHandler.deserializedResponse(context.response, BookingID[].class);
-//        assertNotNull("Booking ID not found!!", bookingIDs);
+        ArrayList<Integer> id = new ArrayList<>();
+        String x;
+        x= context.response.getBody().jsonPath().getString("bookingid");
+        LOG.info("Booking ID1: "+x);
 
     }
 
@@ -66,4 +70,28 @@ public class ViewBookingStepDef {
         LOG.info("Response time: "+context.response.getTimeIn(TimeUnit.MILLISECONDS));
         Assert.assertTrue(context.response.getTimeIn(TimeUnit.MILLISECONDS)<=timeInMilliSecond);
     }
+
+    @When("user makes a request to view booking IDs from {string} to {string}")
+    public void userMakesARequestToViewBookingIDsFromTo(String checkin, String checkout) {
+        context.response = context.request()
+                .queryParams("checkin",checkin, "checkout", checkout)
+                .when().get(context.currentSession.get("endpoint").toString());
+
+    }
+
+    @When("user makes a request to view booking IDs filter by {string} to {string}")
+    public void userMakesARequestToViewBookingIDsFilterByTo(String firstName, String lastName) {
+        context.response = context.request()
+                .queryParams("firstname",firstName, "lastname", lastName)
+                .when().get(context.currentSession.get("endpoint").toString());
+
+    }
+
+    @And("user should see the booking id {string}")
+    public void userShouldSeeTheBookingId(String bookingId) {
+
+        Assert.assertTrue(context.response.getBody().jsonPath().getString("bookingid").contains(bookingId));
+    }
+
+
 }
