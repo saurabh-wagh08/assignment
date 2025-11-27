@@ -11,6 +11,7 @@ import io.restassured.config.RestAssuredConfig;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import io.cucumber.java.en.*;
+import org.json.JSONObject;
 import org.junit.Assert;
 import utils.PropertyFile;
 import utils.RestAssuredRequestFilter;
@@ -53,7 +54,7 @@ public class ViewBookingStepDef {
 
     @Then("user should get the response code {int}")
     public void userShouldGetTheResponseCode(int statusCode) {
-        Assert.assertEquals(context.response.statusCode(),statusCode);
+        Assert.assertEquals(statusCode,context.response.statusCode());
     }
 
     @And("user should see all the booking IDs")
@@ -94,4 +95,66 @@ public class ViewBookingStepDef {
     }
 
 
+    @When("user creates a auth token with credential {string} & {string}")
+    public void userCreatesAAuthTokenWithCredential(String arg0, String arg1) {
+    }
+
+    @When("user makes a request to view booking Id")
+    public void userMakesARequestToViewBookingId() {
+        context.response = context.request()
+                .header("Cookie", context.currentSession.get("token").toString())
+                .pathParam("bookingID", context.currentSession.get("bookingID"))
+                .when().get(context.currentSession.get("endpoint")+"/{bookingID}");
+        context.response.then().log().all();
+    }
+
+    @And("validate the details in get booking by id response {string},{string},{string},{string},{string},{string},{string}")
+    public void validateTheDetailsInGetBookingById(String firstname, String lastname, String totalPrice, String depositPaid, String checkin, String checkout, String additionalNeeds) {
+        Assert.assertEquals(context.response.path("firstname"),firstname);
+        Assert.assertEquals(context.response.path("lastname"),lastname);
+        Assert.assertEquals(context.response.path("totalprice").toString(),totalPrice);
+        Assert.assertEquals(context.response.path("depositpaid").toString(),depositPaid);
+        Assert.assertEquals(context.response.path("bookingdates.checkin"),checkin);
+        Assert.assertEquals(context.response.path("bookingdates.checkout"),checkout);
+        Assert.assertEquals(context.response.path("additionalneeds"),additionalNeeds);
+
+    }
+
+    @And("user try to update booking but {string} is missed for booking dates in payload {string},{string},{string},{string},{string},{string},{string}")
+    public void userTryToUpdateBookingButIsMissedForBookingDatesInPayload(String field, String firstname, String lastname, String totalPrice, String depositPaid, String checkin, String checkout, String additionalNeeds) {
+        JSONObject bookingBody = new JSONObject();
+        bookingBody.put("firstname", firstname);
+        bookingBody.put("lastname",lastname);
+        bookingBody.put("totalprice", Integer.valueOf(totalPrice));
+        bookingBody.put("depositpaid", Boolean.valueOf(depositPaid));
+        JSONObject bookingDates = new JSONObject();
+        bookingDates.put("checkin", checkin);
+        bookingDates.put("checkout", checkout);
+        bookingDates.remove(field);
+        bookingBody.put("bookingdates", bookingDates);
+        bookingBody.put("additionalneeds", additionalNeeds);
+
+        context.response = context.request()
+                .header("Cookie", context.currentSession.get("token").toString())
+                .pathParam("bookingID", context.currentSession.get("bookingID"))
+                .body(bookingBody.toString())
+                .when().put(context.currentSession.get("endpoint")+"/{bookingID}");
+        context.response.then().log().all();
+
+    }
+
+    @And("user should see the booking id")
+    public void userShouldSeeTheBookingId() {
+        Assert.assertNotNull(context.response.path("bookingid"));
+    }
+
+    @When("user makes a request to view booking IDs filter by firstName and lastName")
+    public void userMakesARequestToViewBookingIDsFilterByFirstNameAndLastName() {
+        LOG.info("Session firstname: "+context.currentSession.get("firstname"));
+        LOG.info("Session lastname: "+context.currentSession.get("lastname"));
+        context.response = context.request()
+                .queryParams("firstname", context.currentSession.get("firstname"), "lastname", context.currentSession.get("lastname"))
+                .when().get(context.currentSession.get("endpoint").toString());
+
+    }
 }
